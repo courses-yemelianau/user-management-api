@@ -9,79 +9,89 @@ import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
-import { DB } from '@database';
+import { DB, disconnect } from '@database';
 import { Routes } from '@interfaces/routes.interface';
 import { ErrorMiddleware } from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
 
 export class App {
-  public app: express.Application;
-  public env: string;
-  public port: string | number;
+    public app: express.Application;
+    public env: string;
+    public port: string | number;
 
-  constructor(routes: Routes[]) {
-    this.app = express();
-    this.env = NODE_ENV || 'development';
-    this.port = PORT || 3000;
+    constructor(routes: Routes[]) {
+        this.app = express();
+        this.env = NODE_ENV || 'development';
+        this.port = PORT || 3000;
 
-    this.connectToDatabase();
-    this.initializeMiddlewares();
-    this.initializeRoutes(routes);
-    this.initializeSwagger();
-    this.initializeErrorHandling();
-  }
+        this.connectToDatabase();
+        this.initializeMiddlewares();
+        this.initializeRoutes(routes);
+        this.initializeSwagger();
+        this.initializeErrorHandling();
+    }
 
-  public listen() {
-    this.app.listen(this.port, () => {
-      logger.info(`=================================`);
-      logger.info(`======= ENV: ${this.env} =======`);
-      logger.info(`🚀 App listening on the port ${this.port}`);
-      logger.info(`=================================`);
-    });
-  }
+    public listen() {
+        this.app.listen(this.port, () => {
+            logger.info(`=================================`);
+            logger.info(`======= ENV: ${this.env} =======`);
+            logger.info(`🚀 App listening on the port ${this.port}`);
+            logger.info(`=================================`);
+        });
+    }
 
-  public getServer() {
-    return this.app;
-  }
+    public getServer() {
+        return this.app;
+    }
 
-  private connectToDatabase() {
-    DB.sequelize.sync({ force: false });
-  }
+    private connectToDatabase() {
+        DB.sequelize.sync({ force: false })
+            .then(() => {
+                logger.info('All defined models synced to the DB.');
+            })
+            .catch((error: Error) => {
+                logger.error(`Unable to sync all defined models to the DB: ${error}.`);
+            });
 
-  private initializeMiddlewares() {
-    this.app.use(morgan(LOG_FORMAT, { stream }));
-    this.app.use(cors({ origin: ORIGIN, credentials: CREDENTIALS }));
-    this.app.use(hpp());
-    this.app.use(helmet());
-    this.app.use(compression());
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true }));
-    this.app.use(cookieParser());
-  }
+        process.once('SIGUSR2', () => disconnect(() => process.kill(process.pid, 'SIGUSR2')));
+        process.on('SIGTERM', () => disconnect(() => process.exit(undefined)));
+        process.on('SIGINT', () => disconnect(() => process.exit(undefined)));
+    }
 
-  private initializeRoutes(routes: Routes[]) {
-    routes.forEach(route => {
-      this.app.use('/', route.router);
-    });
-  }
+    private initializeMiddlewares() {
+        this.app.use(morgan(LOG_FORMAT, { stream }));
+        this.app.use(cors({ origin: ORIGIN, credentials: CREDENTIALS }));
+        this.app.use(hpp());
+        this.app.use(helmet());
+        this.app.use(compression());
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(cookieParser());
+    }
 
-  private initializeSwagger() {
-    const options = {
-      swaggerDefinition: {
-        info: {
-          title: 'REST API',
-          version: '1.0.0',
-          description: 'Example docs',
-        },
-      },
-      apis: ['swagger.yaml'],
-    };
+    private initializeRoutes(routes: Routes[]) {
+        routes.forEach(route => {
+            this.app.use('/', route.router);
+        });
+    }
 
-    const specs = swaggerJSDoc(options);
-    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-  }
+    private initializeSwagger() {
+        const options = {
+            swaggerDefinition: {
+                info: {
+                    title: 'REST API',
+                    version: '1.0.0',
+                    description: 'Example docs'
+                }
+            },
+            apis: ['swagger.yaml']
+        };
 
-  private initializeErrorHandling() {
-    this.app.use(ErrorMiddleware);
-  }
+        const specs = swaggerJSDoc(options);
+        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+    }
+
+    private initializeErrorHandling() {
+        this.app.use(ErrorMiddleware);
+    }
 }
