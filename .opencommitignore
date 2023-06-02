@@ -1,0 +1,5 @@
+# prevents using files from generating commits
+
+*.zip
+*.jpg
+package-lock.json
