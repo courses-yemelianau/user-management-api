@@ -9,7 +9,7 @@ import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
-import { DB, disconnect } from '@database';
+import { DB } from '@database';
 import { Routes } from '@interfaces/routes.interface';
 import { ErrorMiddleware } from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
@@ -53,9 +53,9 @@ export class App {
                 logger.error(`Unable to sync all defined models to the DB: ${error}.`);
             });
 
-        process.once('SIGUSR2', () => disconnect(() => process.kill(process.pid, 'SIGUSR2')));
-        process.on('SIGTERM', () => disconnect(() => process.exit(undefined)));
-        process.on('SIGINT', () => disconnect(() => process.exit(undefined)));
+        process.once('SIGUSR2', () => DB.sequelize.close().then(() => process.kill(process.pid, 'SIGUSR2')));
+        process.on('SIGTERM', () => DB.sequelize.close().then(() => process.exit(undefined)));
+        process.on('SIGINT', () => DB.sequelize.close().then(() => process.exit(undefined)));
     }
 
     private initializeMiddlewares() {
