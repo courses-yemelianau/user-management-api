@@ -22,6 +22,7 @@
     "paths": {
       "@/*": ["*"],
       "@config": ["config"],
+      "@constants": ["constants"],
       "@controllers/*": ["controllers/*"],
       "@database": ["database"],
       "@dtos/*": ["dtos/*"],

@@ -1,18 +1,36 @@
 {
   "parser": "@typescript-eslint/parser",
-  "extends": ["prettier", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
+  "extends": [
+    "prettier",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
   "parserOptions": {
-    "ecmaVersion": 2018,
+    "ecmaVersion": "latest",
     "sourceType": "module"
   },
   "rules": {
-    "@typescript-eslint/explicit-member-accessibility": 0,
-    "@typescript-eslint/explicit-function-return-type": 0,
-    "@typescript-eslint/no-parameter-properties": 0,
-    "@typescript-eslint/interface-name-prefix": 0,
-    "@typescript-eslint/explicit-module-boundary-types": 0,
-    "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/ban-types": "off",
-    "@typescript-eslint/no-var-requires": "off"
+    "no-tabs": "warn",
+    "no-duplicate-imports": "warn",
+    "no-useless-rename": "warn",
+    "curly": "warn",
+    "dot-notation": "warn",
+    "eqeqeq": "warn",
+    "no-console": "warn",
+    "no-else-return": "warn",
+    "no-empty-function": "warn",
+    "no-lonely-if": "warn",
+    "no-magic-numbers": "warn",
+    "no-mixed-operators": "warn",
+    "no-multi-assign": "warn",
+    "no-multi-str": "warn",
+    "no-negated-condition": "warn",
+    "no-nested-ternary": "warn",
+    "no-param-reassign": "warn",
+    "no-unneeded-ternary": "warn",
+    "no-useless-concat": "warn",
+    "no-useless-return": "warn",
+    "no-var": "warn",
+    "operator-assignment": "warn"
   }
 }
