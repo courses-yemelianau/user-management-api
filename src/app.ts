@@ -13,7 +13,7 @@ import { DB } from '@database';
 import { Routes } from '@interfaces/routes.interface';
 import { ErrorMiddleware } from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
-import { Env } from '@constants';
+import { Default, Env } from '@constants';
 
 export class App {
     public app: express.Application;
@@ -23,7 +23,7 @@ export class App {
     constructor(routes: Routes[]) {
         this.app = express();
         this.env = NODE_ENV || Env.Development;
-        this.port = PORT || 3000;
+        this.port = PORT || Default.PORT;
 
         this.connectToDatabase();
         this.initializeMiddlewares();
@@ -39,10 +39,6 @@ export class App {
             logger.info(`🚀 App listening on the port ${this.port}`);
             logger.info(`=================================`);
         });
-    }
-
-    public getServer() {
-        return this.app;
     }
 
     private connectToDatabase() {

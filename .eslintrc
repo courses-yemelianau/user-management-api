@@ -1,7 +1,6 @@
 {
   "parser": "@typescript-eslint/parser",
   "extends": [
-    "prettier",
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
@@ -13,14 +12,12 @@
     "no-tabs": "warn",
     "no-duplicate-imports": "warn",
     "no-useless-rename": "warn",
-    "curly": "warn",
     "dot-notation": "warn",
     "eqeqeq": "warn",
     "no-console": "warn",
     "no-else-return": "warn",
     "no-empty-function": "warn",
     "no-lonely-if": "warn",
-    "no-magic-numbers": "warn",
     "no-mixed-operators": "warn",
     "no-multi-assign": "warn",
     "no-multi-str": "warn",
