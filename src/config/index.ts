@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
+import { Env } from '@constants';
 
-config({ path: `.env.${process.env.NODE_ENV || 'development'}.local` });
+config({ path: `.env.${process.env.NODE_ENV || Env.Development}.local` });
 
 export const CREDENTIALS = process.env.CREDENTIALS === 'true';
 export const { NODE_ENV, PORT, SECRET_KEY, LOG_FORMAT, LOG_DIR, ORIGIN } = process.env;

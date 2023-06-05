@@ -13,6 +13,7 @@ import { DB } from '@database';
 import { Routes } from '@interfaces/routes.interface';
 import { ErrorMiddleware } from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+import { Env } from '@constants';
 
 export class App {
     public app: express.Application;
@@ -21,7 +22,7 @@ export class App {
 
     constructor(routes: Routes[]) {
         this.app = express();
-        this.env = NODE_ENV || 'development';
+        this.env = NODE_ENV || Env.Development;
         this.port = PORT || 3000;
 
         this.connectToDatabase();
