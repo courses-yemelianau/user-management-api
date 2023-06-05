@@ -8,5 +8,10 @@ export enum Env {
 export const Default = {
     PORT: 3000,
     ERROR_STATUS_CODE: 500,
-    ERROR_MESSAGE: 'Something went wrong',
+    ERROR_MESSAGE: 'Something went wrong'
 };
+
+export enum UserStatus {
+    Blocked = 'Blocked',
+    Unblocked = 'Unblocked'
+}
