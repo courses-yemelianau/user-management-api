@@ -1,4 +1,5 @@
 import { IsString, IsEmail, IsNotEmpty } from 'class-validator';
+import { UserStatus } from '@constants';
 
 export class CreateUserDto {
     @IsEmail()
@@ -27,5 +28,5 @@ export class LoginUserDto {
 export class UpdateUserDto {
     @IsString()
     @IsNotEmpty()
-    public status: string;
+    public status: UserStatus;
 }
