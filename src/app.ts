@@ -42,7 +42,7 @@ export class App {
     }
 
     private connectToDatabase() {
-        DB.sequelize.sync({ force: false })
+        DB.sequelize.sync({ force: true })
             .then(() => {
                 logger.info('All defined models synced to the DB.');
             })
