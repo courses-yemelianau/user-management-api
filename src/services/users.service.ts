@@ -11,22 +11,32 @@ export class UserService {
         return allUser;
     }
 
-    public async updateUser(userId: number, userData: UpdateUserDto): Promise<User> {
-        const findUser: User = await DB.Users.findByPk(userId);
-        if (!findUser) throw new HttpException(409, 'User doesn\'t exist');
+    public async updateUsers(userIds: number[], userData: UpdateUserDto): Promise<User[]> {
+        const findUsers = await DB.Users.findAll({ where: { id: userIds } });
 
-        await DB.Users.update({ ...findUser, ...userData }, { where: { id: userId } });
+        if (findUsers.length !== userIds.length) {
+            throw new HttpException(409, 'Some users do not exist');
+        }
 
-        const updateUser: User = await DB.Users.findByPk(userId);
-        return updateUser;
+        const updatePromises: Promise<User>[] = findUsers.map(async (user) => {
+            await user.update(userData);
+            return DB.Users.findByPk(user.id);
+        });
+
+        const updatedUsers: User[] = await Promise.all(updatePromises);
+
+        return updatedUsers;
     }
 
-    public async deleteUser(userId: number): Promise<User> {
-        const findUser: User = await DB.Users.findByPk(userId);
-        if (!findUser) throw new HttpException(409, 'User doesn\'t exist');
+    public async deleteUsers(userIds: number[]): Promise<User[]> {
+        const findUsers: User[] = await DB.Users.findAll({ where: { id: userIds } });
 
-        await DB.Users.destroy({ where: { id: userId } });
+        if (findUsers.length !== userIds.length) {
+            throw new HttpException(409, 'Some users do not exist');
+        }
 
-        return findUser;
+        await DB.Users.destroy({ where: { id: userIds } });
+
+        return findUsers;
     }
 }

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
-import { CreateUserDto } from '@dtos/users.dto';
+import { CreateUserDto, UpdateUserDto } from '@dtos/users.dto';
 import { User } from '@interfaces/users.interface';
 import { UserService } from '@services/users.service';
 
@@ -17,24 +17,26 @@ export class UserController {
         }
     };
 
-    public updateUser = async (req: Request, res: Response, next: NextFunction) => {
+    public updateUsers = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId = Number(req.params.id);
-            const userData: CreateUserDto = req.body;
-            const updateUserData: User = await this.user.updateUser(userId, userData);
+            const userIds: number[] = req.body.userIds;
+            const userData: UpdateUserDto = req.body.userData;
 
-            res.status(200).json({ data: updateUserData, message: 'updated' });
+            const updatedUsersData: User[] = await this.user.updateUsers(userIds, userData);
+
+            res.status(200).json({ data: updatedUsersData, message: 'Users updated' });
         } catch (error) {
             next(error);
         }
     };
 
-    public deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+    public deleteUsers = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId = Number(req.params.id);
-            const deleteUserData: User = await this.user.deleteUser(userId);
+            const userIds: number[] = req.body.userIds;
 
-            res.status(200).json({ data: deleteUserData, message: 'deleted' });
+            const deletedUsersData: User[] = await this.user.deleteUsers(userIds);
+
+            res.status(200).json({ data: deletedUsersData, message: 'Users deleted' });
         } catch (error) {
             next(error);
         }

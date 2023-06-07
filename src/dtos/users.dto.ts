@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsNotEmpty } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, IsArray, IsObject } from 'class-validator';
 import { UserStatus } from '@constants';
 
 export class CreateUserDto {
@@ -29,4 +29,20 @@ export class UpdateUserDto {
     @IsString()
     @IsNotEmpty()
     public status: UserStatus;
+}
+
+export class UpdateUsersDto {
+    @IsArray()
+    @IsNotEmpty()
+    public userIds: number[];
+
+    @IsObject()
+    @IsNotEmpty()
+    public userData: UpdateUserDto;
+}
+
+export class DeleteUsersDto {
+    @IsArray()
+    @IsNotEmpty()
+    public userIds: number[];
 }

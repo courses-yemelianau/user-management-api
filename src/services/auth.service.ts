@@ -3,10 +3,11 @@ import { sign } from 'jsonwebtoken';
 import { Service } from 'typedi';
 import { SECRET_KEY } from '@config';
 import { DB } from '@database';
-import { CreateUserDto } from '@dtos/users.dto';
+import { CreateUserDto, LoginUserDto } from '@dtos/users.dto';
 import { HttpException } from '@/exceptions/httpException';
 import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
 import { User } from '@interfaces/users.interface';
+import { UserStatus } from '@constants';
 
 const createToken = (user: User): TokenData => {
     const dataStoredInToken: DataStoredInToken = { id: user.id };
@@ -31,9 +32,13 @@ export class AuthService {
         return createUserData;
     }
 
-    public async login(userData: CreateUserDto): Promise<{ cookie: string; findUser: User }> {
+    public async login(userData: LoginUserDto): Promise<{ cookie: string; findUser: User }> {
         const findUser = await DB.Users.findOne({ where: { email: userData.email } });
         if (!findUser) throw new HttpException(409, `This email ${userData.email} was not found`);
+
+        if (findUser.status === UserStatus.Blocked) {
+            throw new HttpException(403, 'User is blocked. Login is not allowed.');
+        }
 
         const isPasswordMatching: boolean = await compare(userData.password, findUser.password);
         if (!isPasswordMatching) throw new HttpException(409, 'Password not matching');
