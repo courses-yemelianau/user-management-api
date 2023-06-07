@@ -21,16 +21,15 @@ export const AuthMiddleware = async (req: RequestWithUser, res: Response, next: 
         const Authorization = getAuthorization(req);
 
         if (Authorization) {
-            const { id } = verify(Authorization, SECRET_KEY) as DataStoredInToken;
+            const { id } = <DataStoredInToken>verify(Authorization, SECRET_KEY);
             const findUser = await DB.Users.findByPk(id);
-
-            if (findUser) {
-                if (findUser.status === UserStatus.Blocked) {
+            if (findUser.dataValues) {
+                if (findUser.dataValues.status === UserStatus.Blocked) {
                     res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
-                    throw new HttpException(403, 'User is blocked. Access is not allowed.');
+                    next(new HttpException(403, 'User is blocked. Access is not allowed.'));
                 }
 
-                req.user = findUser;
+                req.user = findUser.dataValues;
                 next();
             } else {
                 next(new HttpException(401, 'Wrong authentication token'));

@@ -20,7 +20,7 @@ export class UserService {
 
         const updatePromises: Promise<User>[] = findUsers.map(async (user) => {
             await user.update(userData);
-            return DB.Users.findByPk(user.id);
+            return DB.Users.findByPk(user.dataValues.id);
         });
 
         const updatedUsers: User[] = await Promise.all(updatePromises);

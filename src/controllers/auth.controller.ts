@@ -4,7 +4,6 @@ import { CreateUserDto, LoginUserDto } from '@dtos/users.dto';
 import { User } from '@interfaces/users.interface';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { AuthService } from '@services/auth.service';
-import { logger } from '@utils/logger';
 
 export class AuthController {
     public auth = Container.get(AuthService);
@@ -23,9 +22,7 @@ export class AuthController {
     public logIn = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userData: LoginUserDto = req.body;
-            logger.info(`1@@@userData ${JSON.stringify(userData)}`);
             const { cookie, findUser } = await this.auth.login(userData);
-            logger.info(`8@@@{ cookie, findUser } ${JSON.stringify({ cookie, findUser })}`);
 
             res.setHeader('Set-Cookie', [cookie]);
             res.status(200).json({ data: findUser, message: 'login' });

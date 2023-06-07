@@ -1,7 +1,8 @@
 import { Request } from 'express';
+import { JwtPayload } from 'jsonwebtoken';
 import { User } from '@interfaces/users.interface';
 
-export interface DataStoredInToken {
+export interface DataStoredInToken extends JwtPayload {
     id: number;
 }
 
