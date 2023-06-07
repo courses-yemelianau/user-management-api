@@ -2,7 +2,7 @@ import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { User } from '@interfaces/users.interface';
 import { UserStatus } from '@constants';
 
-export type UserCreationAttributes = Optional<User, 'id' | 'registrationDate' | 'lastLoginDate'>;
+export type UserCreationAttributes = Optional<User, 'id' | 'lastLoginDate'>;
 
 export class UserModel extends Model<User, UserCreationAttributes> implements User {
     public id: number;
@@ -39,7 +39,8 @@ export default function (sequelize: Sequelize): typeof UserModel {
             },
             registrationDate: {
                 allowNull: false,
-                type: DataTypes.DATE
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW
             },
             lastLoginDate: {
                 allowNull: true,

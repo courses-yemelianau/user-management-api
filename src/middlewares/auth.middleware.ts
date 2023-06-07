@@ -4,6 +4,7 @@ import { SECRET_KEY } from '@config';
 import { DB } from '@database';
 import { HttpException } from '@exceptions/httpException';
 import { DataStoredInToken, RequestWithUser } from '@interfaces/auth.interface';
+import { UserStatus } from '@constants';
 
 const getAuthorization = (req) => {
     const cookie = req.cookies.Authorization;
@@ -24,6 +25,11 @@ export const AuthMiddleware = async (req: RequestWithUser, res: Response, next: 
             const findUser = await DB.Users.findByPk(id);
 
             if (findUser) {
+                if (findUser.status === UserStatus.Blocked) {
+                    res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
+                    throw new HttpException(403, 'User is blocked. Access is not allowed.');
+                }
+
                 req.user = findUser;
                 next();
             } else {
